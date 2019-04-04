@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -79,7 +80,7 @@ public class Homework04 {
 
     String result = Arrays.stream(words)
         // TODO: Add realization
-        .collect(Collectors.joining(", ","Materials[ "," ]"));
+        .collect(Collectors.joining(", ", "Materials[ ", " ]"));
 
     assertEquals("Materials[ Glass, Steel, Wood, Stone ]", result);
   }
@@ -100,7 +101,8 @@ public class Homework04 {
   }
 
 
-  private class Dog{
+  private class Dog {
+
     private String name;
     private int age;
 
@@ -178,11 +180,12 @@ public class Homework04 {
     assertEquals(expected, result);
   }
 
-  private enum Role{
+  private enum Role {
     ADMIN, USER, MANAGER
   }
 
-  private class User{
+  private class User {
+
     private String email;
     private Role role;
 
@@ -200,7 +203,8 @@ public class Homework04 {
     }
   }
 
-  private class UserDTO{
+  private class UserDTO {
+
     private String email;
 
     private List<Role> roles;
@@ -259,11 +263,9 @@ public class Homework04 {
 
     //TODO: Make your realization
     List<UserDTO> result = usersFromDB.stream().collect(Collectors.collectingAndThen(
-        Collectors.groupingBy(User::getEmail, Collectors.mapping(User::getRole, Collectors.toList())), stringSetMap -> {
-          List<UserDTO> userDTOS = new ArrayList<>();
-          stringSetMap.forEach((x, y) -> userDTOS.add(new UserDTO(x, y)));
-          return userDTOS;
-        }
+        Collectors.groupingBy(User::getEmail, Collectors.mapping(User::getRole, Collectors.toList())),
+        stringSetMap -> Stream.of(stringSetMap).map(Map::entrySet).flatMap(Collection::stream)
+            .map((x) -> new UserDTO(x.getKey(), x.getValue())).collect(Collectors.toList())
     ));
 
     List<UserDTO> expected = Arrays.asList(
